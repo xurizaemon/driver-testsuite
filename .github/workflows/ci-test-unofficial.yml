@@ -45,3 +45,4 @@ jobs:
             # language=bash
             tearDownCmd: |
               docker logs --timestamps chrome &> ./logs/chrome.docker.log
+              docker rm --force chrome
