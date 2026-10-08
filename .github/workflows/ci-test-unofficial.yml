@@ -1,6 +1,8 @@
 name: Unofficial Tests
 
 on:
+  push:
+  pull_request:
   workflow_dispatch:
 
 defaults:
@@ -45,3 +47,4 @@ jobs:
             # language=bash
             tearDownCmd: |
               docker logs --timestamps chrome &> ./logs/chrome.docker.log
+              docker rm --force chrome
