@@ -39,7 +39,7 @@ jobs:
             # language=bash
             testCmd: ./vendor/bin/phpunit --colors=always --testdox
 
-          - name: "Selenium2"
+          - name: "Selenium2 firefox"
             driverRepoUrl: "https://github.com/minkphp/MinkSelenium2Driver.git"
             driverRepoBranch: "master"
             php: "8.4"
