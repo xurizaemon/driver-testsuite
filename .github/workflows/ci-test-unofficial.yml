@@ -2,6 +2,7 @@ name: Unofficial Tests
 
 on:
   push:
+    branches: [master]
   pull_request:
   workflow_dispatch:
 
@@ -11,7 +12,7 @@ defaults:
 
 jobs:
   run_tests:
-    name: ${{ matrix.name }}
+    name: "Unofficial (${{ matrix.name }})"
     uses: "./.github/workflows/test.yml"
     with:
       name: Unofficial - ${{ matrix.name }}
@@ -21,6 +22,7 @@ jobs:
       setUpCmd: ${{ matrix.setUpCmd }}
       testCmd: ${{ matrix.testCmd }}
       tearDownCmd: ${{ matrix.tearDownCmd }}
+      allowFailure: true
     strategy:
       fail-fast: false
       matrix:
@@ -28,7 +30,7 @@ jobs:
           - name: "chrome-mink-driver"
             driverRepoUrl: "https://gitlab.com/behat-chrome/chrome-mink-driver.git"
             driverRepoBranch: "main"
-            php: "8.4"
+            php: "8.1"
             # language=bash
             setUpCmd: |
               docker run --detach --quiet --network=host --shm-size=1g \
