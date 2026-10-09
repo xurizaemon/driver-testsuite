@@ -1,0 +1,50 @@
+name: Unofficial Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  run_tests:
+    name: ${{ matrix.name }}
+    uses: "./.github/workflows/test.yml"
+    with:
+      name: ${{ matrix.name }}
+      driverRepoUrl: ${{ matrix.driverRepoUrl }}
+      driverRepoBranch: ${{ matrix.driverRepoBranch }}
+      php: ${{ matrix.php }}
+      setUpCmd: ${{ matrix.setUpCmd }}
+      testCmd: ${{ matrix.testCmd }}
+      tearDownCmd: ${{ matrix.tearDownCmd }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "DMore Chrome Mink Driver"
+            driverRepoUrl: "https://gitlab.com/behat-chrome/chrome-mink-driver.git"
+            driverRepoBranch: "main"
+            php: "8.4"
+            # language=bash
+            setUpCmd: |
+              docker run --detach --quiet --network=host --shm-size=1g \
+                         --name chrome zenika/alpine-chrome:latest \
+                         --remote-debugging-address=127.0.0.1 --remote-debugging-port=9222 \
+                         --no-sandbox --use-gl=swiftshader --disable-software-rasterizer --disable-dev-shm-usage
+              # File upload tests supply Chrome job runner file paths, copy fixtures to same location for Chrome.
+              docker exec --user root chrome mkdir -p $PWD/vendor/mink/driver-testsuite
+              docker cp $PWD/vendor/mink/driver-testsuite/web-fixtures chrome:$PWD/vendor/mink/driver-testsuite/web-fixtures
+              sed -e "s#http://localhost/#http://localhost:8002/#" -e "s#http://localhost:9222#http://127.0.0.1:9222#" phpunit.xml.dist > phpunit.xml
+              curl --retry 5 --retry-all-errors --retry-delay 1 --max-time 10 --head -X GET http://localhost:9222/
+            # language=bash
+            testCmd: |
+              export WEB_FIXTURES_BROWSER=chrome
+              ./vendor/bin/phpunit --colors=always --testdox
+            # language=bash
+            tearDownCmd: |
+              docker logs --timestamps chrome &> ./logs/chrome.docker.log
+              docker rm --force chrome
