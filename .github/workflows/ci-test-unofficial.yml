@@ -14,7 +14,7 @@ jobs:
     name: ${{ matrix.name }}
     uses: "./.github/workflows/test.yml"
     with:
-      name: Unofficial - ${{ matrix.name }}
+      name: Unofficial - ${{ matrix.name.replace("dmore/chrome-mink-driver", "dmore chrome-mink-driver") }}
       driverRepoUrl: ${{ matrix.driverRepoUrl }}
       driverRepoBranch: ${{ matrix.driverRepoBranch }}
       php: ${{ matrix.php }}
