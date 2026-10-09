@@ -1,6 +1,9 @@
 name: Unofficial Tests
 
 on:
+  push:
+    branches: [master]
+  pull_request:
   workflow_dispatch:
 
 defaults:
@@ -10,6 +13,7 @@ defaults:
 jobs:
   run_tests:
     name: ${{ matrix.name }}
+    continue-on-error: true
     uses: "./.github/workflows/test.yml"
     with:
       name: Unofficial - ${{ matrix.name }}
