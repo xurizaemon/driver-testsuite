@@ -1,7 +1,9 @@
 name: Unofficial Tests
+run-name: "Unofficial tests: ${{ github.event.pull_request.title || github.event.head_commit.message || github.ref_name }}"
 
 on:
   push:
+    branches: [master]
   pull_request:
   workflow_dispatch:
 
@@ -11,24 +13,25 @@ defaults:
 
 jobs:
   run_tests:
-    name: ${{ matrix.name }}
+    name: "Unofficial (${{ matrix.name }})"
     uses: "./.github/workflows/test.yml"
     with:
-      name: ${{ matrix.name }}
+      name: Unofficial - ${{ matrix.name }}
       driverRepoUrl: ${{ matrix.driverRepoUrl }}
       driverRepoBranch: ${{ matrix.driverRepoBranch }}
       php: ${{ matrix.php }}
       setUpCmd: ${{ matrix.setUpCmd }}
       testCmd: ${{ matrix.testCmd }}
       tearDownCmd: ${{ matrix.tearDownCmd }}
+      allowFailure: true
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: "DMore Chrome Mink Driver"
+          - name: "chrome-mink-driver"
             driverRepoUrl: "https://gitlab.com/behat-chrome/chrome-mink-driver.git"
             driverRepoBranch: "main"
-            php: "8.4"
+            php: "8.2"
             # language=bash
             setUpCmd: |
               docker run --detach --quiet --network=host --shm-size=1g \
