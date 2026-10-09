@@ -1,4 +1,5 @@
 name: Unofficial Tests
+run-name: "Unofficial tests: ${{ github.event.pull_request.title || github.event.head_commit.message || github.ref_name }}"
 
 on:
   push:
@@ -12,7 +13,7 @@ defaults:
 
 jobs:
   run_tests:
-    name: ${{ matrix.name }}
+    name: "Unofficial (${{ matrix.name }})"
     continue-on-error: true
     uses: "./.github/workflows/test.yml"
     with:
@@ -30,7 +31,7 @@ jobs:
           - name: "chrome-mink-driver"
             driverRepoUrl: "https://gitlab.com/behat-chrome/chrome-mink-driver.git"
             driverRepoBranch: "main"
-            php: "8.4"
+            php: "8.2"
             # language=bash
             setUpCmd: |
               docker run --detach --quiet --network=host --shm-size=1g \
