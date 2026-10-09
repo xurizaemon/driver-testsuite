@@ -14,7 +14,6 @@ defaults:
 jobs:
   run_tests:
     name: "Unofficial (${{ matrix.name }})"
-    continue-on-error: true
     uses: "./.github/workflows/test.yml"
     with:
       name: Unofficial - ${{ matrix.name }}
@@ -24,6 +23,7 @@ jobs:
       setUpCmd: ${{ matrix.setUpCmd }}
       testCmd: ${{ matrix.testCmd }}
       tearDownCmd: ${{ matrix.tearDownCmd }}
+      allowFailure: true
     strategy:
       fail-fast: false
       matrix:
