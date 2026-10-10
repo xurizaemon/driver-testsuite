@@ -1,5 +1,4 @@
 name: Unofficial Tests
-run-name: "Unofficial tests: ${{ github.event.pull_request.title || github.event.head_commit.message || github.ref_name }}"
 
 on:
   push:
