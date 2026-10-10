@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      repeat:
+        description: Run each test job this many times (for timing samples)
+        type: number
+        default: 1
 
 defaults:
   run:
@@ -21,6 +26,7 @@ jobs:
       setUpCmd: ${{ matrix.setUpCmd }}
       testCmd: ${{ matrix.testCmd }}
       tearDownCmd: ${{ matrix.tearDownCmd }}
+      repeat: ${{ fromJSON(inputs.repeat || '1') }}
     strategy:
       fail-fast: false
       matrix:

@@ -29,6 +29,11 @@ on:
         description: Command to run after test
         required: false
         type: string
+      repeat:
+        description: Number of times to run the tests in this job (for timing samples)
+        required: false
+        type: number
+        default: 1
       allowFailure:
         description: Whether a failing test run should leave the workflow green
         required: false
@@ -68,8 +73,20 @@ jobs:
           curl --retry 5 --retry-all-errors --retry-delay 1 --max-time 10 --head -X GET http://localhost:8002/
 
       - name: Run tests
+        env:
+          REPEAT: ${{ inputs.repeat }}
         # language=bash
-        run: eval "${{ inputs.testCmd }}"
+        run: |
+          # Every iteration runs, even after a failure; the step fails at the end if any iteration failed.
+          rc=0
+          for i in $(seq 1 "$REPEAT"); do
+            echo "::group::Test run $i of $REPEAT"
+            start=$(date +%s%N)
+            eval "${{ inputs.testCmd }}" || rc=$?
+            echo "run $i/$REPEAT: $(( ($(date +%s%N) - start) / 1000000 )) ms (exit ${rc})" | tee -a ./logs/timings.txt
+            echo "::endgroup::"
+          done
+          exit $rc
 
       - name: Tear down
         if: always()
